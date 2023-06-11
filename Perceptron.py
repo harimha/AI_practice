@@ -3,6 +3,7 @@ import numpy as np
 
 class Perceptron():
     def __init__(self, nDim, w=[], b=0):
+        self.nDim = nDim
         if len(w) > 0:
             self.w = np.array(w)
             self.w0 = b
@@ -68,12 +69,36 @@ p.fit(x, y, nSamples, nEpochs, eta)
 
 # 결과 시각화
 nGrid = 61
-x1_lin = np.linspace(0, 3, nGrid)
+x1_lin = np.linspace(0, 3, nGrid) # 0 ~ 3 까지 61개로 동일간격으로 나눔
 x2_lin = np.linspace(0, 3, nGrid)
 
-x1_mesh, x2_mesh = np.meshgrid(x2_lin, x1_lin)
+x1_mesh, x2_mesh = np.meshgrid(x2_lin, x1_lin) # 2차원 공간 생성
 
 xx = np.vstack([x1_mesh.ravel(), x2_mesh.ravel()]).T
 
+# 학습된 Perceptron으로 xx에 대한 출력 계산
+yy = np.empty(nGrid*nGrid, dtype=int)
+for k in range(nGrid*nGrid):
+    yy[k] = p.predict(xx[k])
+
+# 출력할 그래프의 크기 및 좌표 범위 설정
+plt.rcParams["figure.figsize"] = (3,3)
+plt.ylim(0,3)
+plt.xlim(0,3)
+
+# 클래스별 출력 색상과 레이블
+colors = ["magenta", "blue"]
+class_id = ['class_0', 'class_1']
+
+# 산점도
+for c, i, c_name in zip(colors, [0,1], class_id):
+    plt.scatter(xx[yy == i, 0], xx[yy== i, 1],
+                c = c, s=5, alpha=0.3,
+                edgecolors='none')
+    plt.scatter(x[y==i,0], x[y==i,1],
+                c=c,s=20, label=c_name)
+
+plt.legend(loc='upper right')
+plt.show()
 
 
